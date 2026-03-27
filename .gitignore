@@ -13,3 +13,8 @@ checkpoints/
 *.pth
 *.safetensors
 *.csv
+
+# Large binary directories
+medsam_weights/
+embeddings_cache/
+debug_layers.py

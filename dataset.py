@@ -69,11 +69,35 @@ class MedSAMDataset(Dataset):
         
         return inputs
 
+class CachedMedSAMDataset(Dataset):
+    """
+    Loads pre-computed image embeddings from disk (created by precompute_embeddings.py).
+    
+    Skips the ViT-B vision encoder entirely, reducing per-epoch time from
+    ~60 minutes → ~2-5 minutes. Each .pt file contains:
+      - embedding:   (256, 64, 64) tensor from the frozen vision encoder
+      - input_boxes: (1, 4) bounding box prompt
+      - label:       (H, W) binary segmentation mask
+    """
+    def __init__(self, cache_dir: str):
+        self.cache_files = sorted(glob(os.path.join(cache_dir, "*.pt")))
+        assert len(self.cache_files) > 0, f"No .pt files found in {cache_dir}. Run precompute_embeddings.py first!"
+
+    def __len__(self):
+        return len(self.cache_files)
+
+    def __getitem__(self, idx):
+        data = torch.load(self.cache_files[idx], weights_only=True)
+        return {
+            "embedding":   data["embedding"],    # (256, 64, 64)
+            "input_boxes": data["input_boxes"],  # (1, 4)
+        }, data["label"]                         # (H, W)
+
 if __name__ == "__main__":
     # --- Quick Check ---
     print("Loading Processor...")
-    # NOTE: You MUST have 'transformers' and 'Pillow' installed
-    processor = SamProcessor.from_pretrained("flaviagiammarino/medsam-vit-base")
+    # Load offline processor configs
+    processor = SamProcessor.from_pretrained("./medsam_weights")
     
     # We will test against the Prostate Data from your previous project!
     train_image_dir = "C:/personal_proj/prostate/data/train_png/images"
@@ -89,3 +113,4 @@ if __name__ == "__main__":
     print(f"Pixel Values (Image):     {sample['pixel_values'].shape}")
     print(f"Input Boxes (Prompt):     {sample['input_boxes'].shape}")
     print(f"Labels (Ground Truth):    {sample['labels'].shape}")
+

@@ -8,14 +8,14 @@ import os
 sys.path.append(os.path.abspath("C:/personal_proj/lora_trainer"))
 from injector import inject_lora
 
-def build_medsam_lora(r=8, target_layers=["q_proj", "v_proj"]):
+def build_medsam_lora(r=8, target_layers=["qkv", "proj"]):
     """
-    Loads MedSAM (ViT-B backbone), injects LoRA into the Vision Encoder's 
-    attention layers, and explicitly unfreezes the mask decoder.
+    Loads MedSAM (ViT-B backbone), injects LoRA into the Vision Encoder's fused
+    attention layers (qkv = Q,K,V fused; proj = output projection), and unfreezes the mask decoder.
     """
-    print("Loading Base MedSAM Model (flaviagiammarino/medsam-vit-base)...")
-    # Load the officially published MedSAM weights
-    model = SamModel.from_pretrained("flaviagiammarino/medsam-vit-base")
+    print("Loading Base MedSAM Model (Local Offline Directory)...")
+    # Load from your newly created local folder
+    model = SamModel.from_pretrained("./medsam_weights")
     
     # 1. Freeze entirely first
     for param in model.parameters():
@@ -42,8 +42,8 @@ def build_medsam_lora(r=8, target_layers=["q_proj", "v_proj"]):
     return model
 
 if __name__ == "__main__":
-    # Test our baseline ablation configuration (r=8, q+v)
-    model = build_medsam_lora(r=8, target_layers=["q_proj", "v_proj"])
+    # Use correct HuggingFace SAM layer names (fused qkv, not separate q_proj/v_proj)
+    model = build_medsam_lora(r=8, target_layers=["qkv", "proj"])
     
     trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
     frozen_params = sum(p.numel() for p in model.parameters() if not p.requires_grad)
