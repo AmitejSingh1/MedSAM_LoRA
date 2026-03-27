@@ -39,25 +39,20 @@ git clone https://github.com/AmitejSingh1/MedSAM_LoRA
 cd MedSAM_LoRA
 ```
 
-### Downloads (Large Files)
+### 1. Download MedSAM Weights
 
-These files are too large for GitHub. Download them separately and place them in the repo root:
+The base weights for MedSAM are required. Download them from Hugging Face and place them in the `./medsam_weights/` directory:
 
-| File | Size | Description | Link |
-|---|---|---|---|
-| `medsam_weights/` | ~350 MB | Pretrained MedSAM ViT-B weights | [Google Drive](YOUR_LINK_HERE) |
-| `embeddings_cache/` | ~5 GB | Precomputed ViT-B embeddings for 1722 training images | [Google Drive](YOUR_LINK_HERE) |
-| `checkpoints/medsam_r8_best.pth` | ~9 MB | Trained LoRA adapter (r=8, Dice 0.957) | [Google Drive](YOUR_LINK_HERE) |
+- **MedSAM ViT-B**: [wanglab/medsam-vit-b](https://huggingface.co/wanglab/medsam-vit-b)
 
-> **Note:** If you skip `embeddings_cache/`, run `python precompute_embeddings.py` once to generate it (~10 min on GPU).
+### 2. Prepare Embeddings
+
+The training pipeline uses an **Embedding Cache** to achieve 20x speedup. You do not need to download these; simply run the precompute script once (see Usage).
 
 ```bash
-# 2. Install dependencies
+# Install dependencies
 pip install torch transformers opencv-python numpy pandas tqdm scikit-learn
-
-# 3. Download MedSAM weights manually from HuggingFace:
-#    https://huggingface.co/wanglab/medsam-vit-b
-#    Place the downloaded files into ./medsam_weights/
+```
 ```
 
 ---
