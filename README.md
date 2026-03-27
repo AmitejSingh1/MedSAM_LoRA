@@ -6,13 +6,13 @@ This repository implements **LoRA (Low-Rank Adaptation)** fine-tuning on **MedSA
 
 ## Results
 
-| Model | Dice (F1) | IoU | Accuracy | Recall | Precision |
-|---|---|---|---|---|---|
-| Base MedSAM (Zero-Shot) | 0.519 | 0.388 | 0.758 | 0.506 | 0.870 |
-| VGG-UNet (Published CNN Baseline) | 0.832 | 0.784 | 0.953 | 0.921 | 0.854 |
-| **MedSAM + LoRA r=8 (Ours)** | **0.957** | **0.920** | **0.970** | **0.937** | **0.979** |
+| Model | Dice (+/-) | IoU | Trainable Params | Total Params |
+| :--- | :---: | :---: | :---: | :---: |
+| Base MedSAM (Zero-Shot) | 0.519 | 0.388 | **0** | 94.1M |
+| VGG-UNet (CNN Baseline) | 0.832 | 0.784 | 25.8M | 25.8M |
+| **MedSAM + LoRA r=8 (Ours)** | **0.957** | **0.919** | **4.5M** | 94.2M |
 
-**Key finding:** LoRA fine-tuning lifted Dice from 0.519 → 0.957 (+43.8pp) by training only ~2.3M additional adapter parameters on top of the frozen 89M ViT-B encoder.
+**Key finding:** LoRA fine-tuning lifted Dice from 0.519 → 0.957 (+43.8pp) while training **82% fewer parameters** than the CNN baseline.
 
 ---
 
@@ -37,7 +37,21 @@ LoRA is injected into each of the 12 ViT-B attention blocks:
 # 1. Clone the repository
 git clone https://github.com/AmitejSingh1/MedSAM_LoRA
 cd MedSAM_LoRA
+```
 
+### Downloads (Large Files)
+
+These files are too large for GitHub. Download them separately and place them in the repo root:
+
+| File | Size | Description | Link |
+|---|---|---|---|
+| `medsam_weights/` | ~350 MB | Pretrained MedSAM ViT-B weights | [Google Drive](YOUR_LINK_HERE) |
+| `embeddings_cache/` | ~5 GB | Precomputed ViT-B embeddings for 1722 training images | [Google Drive](YOUR_LINK_HERE) |
+| `checkpoints/medsam_r8_best.pth` | ~9 MB | Trained LoRA adapter (r=8, Dice 0.957) | [Google Drive](YOUR_LINK_HERE) |
+
+> **Note:** If you skip `embeddings_cache/`, run `python precompute_embeddings.py` once to generate it (~10 min on GPU).
+
+```bash
 # 2. Install dependencies
 pip install torch transformers opencv-python numpy pandas tqdm scikit-learn
 
