@@ -13,9 +13,9 @@ def build_medsam_lora(r=8, target_layers=["q_proj", "v_proj"]):
     Loads MedSAM (ViT-B backbone), injects LoRA into the Vision Encoder's 
     attention layers, and explicitly unfreezes the mask decoder.
     """
-    print("Loading Base MedSAM Model (wanglab/medsam-vit-b)...")
+    print("Loading Base MedSAM Model (flaviagiammarino/medsam-vit-base)...")
     # Load the officially published MedSAM weights
-    model = SamModel.from_pretrained("wanglab/medsam-vit-b")
+    model = SamModel.from_pretrained("flaviagiammarino/medsam-vit-base")
     
     # 1. Freeze entirely first
     for param in model.parameters():
