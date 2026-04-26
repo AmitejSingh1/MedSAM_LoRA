@@ -1,7 +1,9 @@
 # MedSAM LoRA — Prostate Segmentation with Parameter-Efficient Fine-Tuning
 
 This repository implements **LoRA (Low-Rank Adaptation)** fine-tuning on **MedSAM** (Segment Anything Model pretrained on medical images) for prostate segmentation on ultrasound MRI, demonstrating that Transformer-based architectures with attention-layer LoRA injection dramatically outperform CNN baselines.
+📝 **Read the full technical writeup:** [Building a LoRA Trainer from Scratch for Medical Image Segmentation](https://substack.com/@amitejsinghdatta/p-192350772)
 
+---
 ---
 
 ## Results
